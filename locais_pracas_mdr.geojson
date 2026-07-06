@@ -1,0 +1,17 @@
+{
+"type": "FeatureCollection",
+"name": "locais_pracas_mdr",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "foto": "IMG_5652.JPG.jpeg", "local": "Praça Lourenço Scotti", "bairro": "Centro", "populacao": 14800.0 }, "geometry": { "type": "Point", "coordinates": [ -47.552305555555556, -2.043147222222222 ] } },
+{ "type": "Feature", "properties": { "foto": "IMG_5677.JPG.jpeg", "local": "Praça Igreja São Raimundo Nonato", "bairro": "Tubilândia", "populacao": 7400.0 }, "geometry": { "type": "Point", "coordinates": [ -47.558563759854188, -2.034892254386245 ] } },
+{ "type": "Feature", "properties": { "foto": "IMG_5674.JPG.jpeg", "local": "Praça Igreja N.S Nazaré", "bairro": "N.S Nazaré", "populacao": 7800.0 }, "geometry": { "type": "Point", "coordinates": [ -47.561270544771112, -2.049502587757439 ] } },
+{ "type": "Feature", "properties": { "foto": "IMG_5682.JPG.jpeg", "local": "Praça Igreja São Pedro", "bairro": "Tubilândia", "populacao": 0.0 }, "geometry": { "type": "Point", "coordinates": [ -47.562675186488626, -2.03577009314966 ] } },
+{ "type": "Feature", "properties": { "foto": "IMG_5655.JPG.jpeg", "local": "Praça das Crianças", "bairro": "Centro", "populacao": null }, "geometry": { "type": "Point", "coordinates": [ -47.550808333333329, -2.045416666666667 ] } },
+{ "type": "Feature", "properties": { "foto": "IMG_5663.JPG.jpeg", "local": "Praça Igreja São Cristóvão", "bairro": "São Cristóvão", "populacao": 9000.0 }, "geometry": { "type": "Point", "coordinates": [ -47.54367883331949, -2.040608437691242 ] } },
+{ "type": "Feature", "properties": { "foto": "IMG_5672.JPG.jpeg", "local": "Praça Igreja N.S Fátima", "bairro": "Novo Horizonte", "populacao": 6400.0 }, "geometry": { "type": "Point", "coordinates": [ -47.556335891147945, -2.055902317220357 ] } },
+{ "type": "Feature", "properties": { "foto": "IMG_5660.JPG.jpeg", "local": "Praça Igreja São Francisco de Assis", "bairro": "Centro", "populacao": 0.0 }, "geometry": { "type": "Point", "coordinates": [ -47.551534701948768, -2.045978948978879 ] } },
+{ "type": "Feature", "properties": { "foto": "IMG_5667.JPG.jpeg", "local": "Praça Igreja Santo Antônio", "bairro": "Santo Antônio", "populacao": 10000.0 }, "geometry": { "type": "Point", "coordinates": [ -47.544727000744203, -2.051445951983378 ] } },
+{ "type": "Feature", "properties": { "foto": "IMG_5685.JPG.jpeg", "local": "Praça do Ginásio de Esportes", "bairro": "São Francisco", "populacao": 15100.0 }, "geometry": { "type": "Point", "coordinates": [ -47.558570164730433, -2.044534365610939 ] } }
+]
+}

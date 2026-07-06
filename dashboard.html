@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Análise de Ocorrências · MDR (Filtros sobre o mapa)</title>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Leaflet.heat -->
+  <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#050d08;--bg2:#07120c;--bg3:#0b1a12;--border:#0f3a20;--border2:#1f5531;
+      --green:#2dd38a;--muted:#7fbf96;--txt:#d7f8e8;--font:'Source Sans 3',sans-serif;
+      --filter-bg: rgba(3,6,4,0.92);
+      --filter-border: rgba(45,211,138,0.18);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{font-family:var(--font);background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+    #hdr{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid rgba(0,0,0,0.2);background:linear-gradient(90deg,#020805,#081409)}
+    #hdr h1{font-size:16px;color:#bff6d8}
+    #hdr .kpis{display:flex;gap:18px}
+    .kpi-small{text-align:right}
+    .kpi-val{font-family:monospace;font-weight:700;color:var(--green);font-size:18px}
+    .kpi-label{font-size:11px;color:var(--muted)}
+    #main{display:flex;flex:1;overflow:hidden;position:relative}
+    #map{flex:1;min-width:0;height:100%}
+    #panel{width:420px;background:var(--bg2);border-left:1px solid rgba(0,0,0,0.25);display:flex;flex-direction:column;overflow:auto}
+
+    #tabs{
+      display:flex;flex-wrap:wrap;gap:6px;background:var(--bg);
+      border-bottom:1px solid rgba(0,0,0,0.2);position:sticky;top:0;z-index:20;padding:6px 8px;
+    }
+    .tab{
+      flex:1 1 auto;min-width:80px;padding:6px 8px;text-align:center;font-weight:700;
+      color:var(--muted);cursor:pointer;font-size:12px;white-space:nowrap;overflow:hidden;
+      text-overflow:ellipsis;border-radius:8px;background:transparent;
+    }
+    .tab.active{color:var(--green);border-bottom:2px solid var(--green);background:rgba(45,211,138,0.02)}
+    @media(max-width:600px){.tab{min-width:64px;padding:5px 6px;font-size:11px}}
+
+    .tc{display:none;padding:14px;gap:12px;flex-direction:column}
+    .tc.active{display:flex}
+    .card{background:var(--bg3);border:1px solid rgba(0,0,0,0.2);border-radius:10px;padding:12px}
+    .card h4{font-size:13px;color:var(--muted);margin-bottom:8px}
+    .kgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+    .kbox{background:var(--bg);padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.2);text-align:center}
+    .kbox .val{font-family:monospace;font-weight:700;color:var(--green);font-size:20px}
+
+    /* Visualizar Imagem */
+    .photo-card-header{
+      display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;
+    }
+    .photo-card-header h4{font-size:13px;color:var(--muted);margin:0}
+    #btn-expand-photo{
+      display:none;
+      background:transparent;border:1px solid rgba(45,211,138,0.25);
+      color:var(--green);border-radius:7px;padding:4px 10px;
+      font-size:11px;font-weight:700;cursor:pointer;gap:5px;align-items:center;
+      transition:background 0.15s;
+    }
+    #btn-expand-photo:hover{background:rgba(45,211,138,0.08)}
+    #btn-expand-photo.visible{display:flex}
+
+    #photo-viewer{
+      margin-top:0;
+      min-height:260px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      background:#020604;
+      border:1px dashed var(--border);
+      border-radius:10px;
+      overflow:hidden;
+    }
+    #photo-viewer img{ width:100%; height:auto; display:none; cursor:zoom-in; }
+    #photo-viewer .placeholder{ color:var(--border2); text-align:center; padding:20px; font-size:13px; }
+    .photo-caption{
+      padding:8px; font-size:12px; background:rgba(0,0,0,0.5); width:100%; text-align:center; color:var(--green); display:none;
+    }
+
+    /* Lightbox */
+    #lightbox{
+      display:none;position:fixed;inset:0;z-index:3000;
+      background:rgba(0,0,0,0.92);
+      align-items:center;justify-content:center;flex-direction:column;
+      animation:lbFadeIn 0.2s ease;
+    }
+    #lightbox.open{display:flex}
+    @keyframes lbFadeIn{from{opacity:0}to{opacity:1}}
+    #lightbox img{
+      max-width:92vw;max-height:85vh;
+      border-radius:10px;
+      box-shadow:0 8px 40px rgba(0,0,0,0.8);
+      object-fit:contain;
+    }
+    #lightbox-caption{
+      margin-top:14px;font-size:14px;color:var(--green);font-weight:600;
+    }
+    #lightbox-close{
+      position:absolute;top:18px;right:22px;
+      background:transparent;border:1px solid rgba(255,255,255,0.15);
+      color:#fff;font-size:22px;line-height:1;
+      border-radius:8px;padding:4px 12px;cursor:pointer;
+      transition:background 0.15s;
+    }
+    #lightbox-close:hover{background:rgba(255,255,255,0.08)}
+
+    .cwrap{height:220px;position:relative}
+    #loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:2000;background:linear-gradient(rgba(5,13,8,0.5),rgba(5,13,8,0.5));backdrop-filter:blur(1px)}
+    .spinner{width:40px;height:40px;border:3px solid rgba(0,0,0,0.2);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .small{font-size:12px;color:var(--muted)}
+
+    #filterBar{
+      position:absolute;top:12px;left:37%;transform:translateX(-50%);z-index:900;
+      display:flex;gap:10px;align-items:center;padding:12px;border-radius:14px;
+      background:var(--filter-bg);border:1px solid var(--filter-border);
+      box-shadow:0 10px 30px rgba(0,0,0,0.6),0 1px 0 rgba(45,211,138,0.06) inset;
+      width:auto;max-width:calc(100% - 60px);
+    }
+    .filters-group{display:flex;gap:10px;align-items:center}
+    .flt-item{display:flex;flex-direction:column;gap:6px;flex:0 0 auto}
+    .flt-item label{font-size:12px;color:var(--green);font-weight:700;letter-spacing:0.4px}
+    .flt-select{background:transparent;border:1px solid rgba(45,211,138,0.18);color:var(--txt);padding:8px 12px;border-radius:10px;min-width:130px;max-width:220px;box-shadow:0 2px 0 rgba(0,0,0,0.3)}
+    .flt-select option{background:#07120c;color:var(--txt)}
+    .flt-clear{padding:8px 14px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);cursor:pointer}
+
+    .leaflet-control-legend{
+      background:var(--filter-bg);border:1px solid var(--filter-border);color:var(--muted);
+      padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.6);width:180px;font-size:12px;
+    }
+    .legend-title{color:var(--green);font-weight:700;margin-bottom:8px;font-size:12px}
+    .legend-sample{display:flex;align-items:center;gap:8px}
+    .legend-circle{
+      width:14px;height:14px;border-radius:50%;
+      background:#3b82f6;box-shadow:0 0 6px rgba(59,130,246,0.45);
+      border:1px solid rgba(0,0,0,0.3)
+    }
+    .legend-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:8px}
+
+    #basemap-toggle{
+      position:absolute;top:10px;left:990px;z-index:1000;display:column;align-items:center;
+      background:linear-gradient(180deg,#0c1a14,#06210a);border-radius:14px;padding:6px;
+      box-shadow:0 8px 18px rgba(0,0,0,0.45);border:1px solid rgba(0,0,0,0.25);
+    }
+    .bm-btn{
+      display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:10px;min-width:92px;
+      color:var(--muted);cursor:pointer;font-weight:700;font-size:12px;background:transparent;
+      border:none;transition:all 0.2s ease;
+    }
+    .bm-btn:hover{background:rgba(45,211,138,0.03)}
+    .bm-btn.active{background:linear-gradient(180deg,rgba(45,211,138,0.06),rgba(45,211,138,0.02));color:var(--green);box-shadow:inset 0 -2px 0 rgba(45,211,138,0.06)}
+    .bm-icon{font-size:16px}
+    .bm-sep{width:1px;height:24px;background:rgba(255,255,255,0.1)}
+
+    @media(max-width:900px){
+      #basemap-toggle{left:auto;right:10px}
+      #filterBar{left:8px;transform:none;width:calc(100% - 16px);max-width:none;flex-wrap:wrap}
+    }
+  </style>
+</head>
+<body>
+
+<div id="hdr">
+  <div>
+    <h1>Análise de Ocorrências · MDR</h1>
+    <div class="small">Filtros sobre o mapa • locais_pracas_mdr.geojson</div>
+  </div>
+  <div class="kpis">
+    <div class="kpi-small"><div class="kpi-val" id="h-total">—</div><div class="kpi-label">Número de Praças</div></div>
+    <div class="kpi-small"><div class="kpi-val" id="h-days">—</div><div class="kpi-label">População Imediatamente Assistida</div></div>
+  </div>
+</div>
+
+<div id="main">
+  <div id="map"></div>
+
+  <div id="filterBar">
+    <div class="filters-group">
+      <div class="flt-item"><label for="f-bairro">Bairro</label><select id="f-bairro" class="flt-select"></select></div>
+      <div class="flt-item"><label for="f-local">Local</label><select id="f-local" class="flt-select"></select></div>
+    </div>
+    <button id="btn-clear" class="flt-clear" title="Limpar filtros">Limpar</button>
+  </div>
+
+  <div id="basemap-toggle">
+    <button class="bm-btn active" id="bm-osm" onclick="setBasemap('osm')"><span class="bm-icon">🗺️</span>Mapa</button>
+    <div class="bm-sep"></div>
+    <button class="bm-btn" id="bm-sat" onclick="setBasemap('sat')"><span class="bm-icon">🛰️</span>Satélite</button>
+    <div class="bm-sep"></div>
+    <button class="bm-btn" id="bm-heat" onclick="setBasemap('heat')"><span class="bm-icon">🔥</span>Calor</button>
+  </div>
+
+  <div id="panel">
+    <div id="tabs">
+      <div class="tab active" data-tab="analise">Visão Geral</div>
+      <div class="tab" data-tab="ranking">Ranking</div>
+    </div>
+
+    <div id="tc-analise" class="tc active">
+      <div class="kgrid">
+        <div class="kbox"><div class="val" id="v-pracas">—</div><div class="small">Praças Atendidas</div></div>
+        <div class="kbox"><div class="val" id="v-populacao">—</div><div class="small">População Imediatamente Assistida</div></div>
+      </div>
+
+      <div class="card">
+        <div class="photo-card-header">
+          <h4>Visualizar Imagem</h4>
+          <button id="btn-expand-photo" title="Ver em tela cheia" onclick="openLightbox()">
+            <span>⛶</span> Expandir
+          </button>
+        </div>
+        <div id="photo-viewer">
+          <div class="placeholder">Clique em uma praça no mapa para ver a foto</div>
+          <img id="main-photo" src="" alt="Foto da Praça" onclick="openLightbox()">
+          <div id="main-caption" class="photo-caption"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tc-ranking" class="tc">
+      <div class="card"><h4>População por Bairro</h4><div class="cwrap" style="height:420px"><canvas id="ch-rank"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="loading" style="display:none">
+  <div class="spinner"></div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="">
+  <div id="lightbox-caption"></div>
+</div>
+
+<script>
+const GEOJSON_URL = 'locais_pracas_mdr.geojson';
+const BAIRROS_URL = 'bairros.geojson';
+
+let raw = [], filtered = [], map, markersLayer, charts = {}, legendControl;
+let tileDark, tileOSM, tileSat, heatLayer;
+let currentBase = 'osm';
+let heatActive = false;
+
+function initUI(){
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.tc').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById('tc-' + t.dataset.tab).classList.add('active');
+    });
+  });
+
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    document.getElementById('f-bairro').value = '';
+    updateLocalOptions('');
+    document.getElementById('f-local').value = '';
+    applyFilters();
+  });
+
+  document.getElementById('f-local').addEventListener('change', applyFilters);
+
+  document.getElementById('lightbox').addEventListener('click', function(e){
+    if(e.target === this) closeLightbox();
+  });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox(); });
+
+  adjustTabFonts();
+  window.addEventListener('resize', adjustTabFonts);
+}
+
+function tryAutoFetch(){
+  fetch(GEOJSON_URL)
+    .then(r => r.json())
+    .then(geojson => {
+      raw = normalizeGeoJSON(geojson.features);
+      onDataLoaded();
+      // Plotar bairros após carregar o mapa
+      plotBairrosPolygons();
+    })
+    .catch(err => console.error('Erro:', err));
+}
+
+function plotBairrosPolygons() {
+  fetch(BAIRROS_URL)
+    .then(r => r.json())
+    .then(geojson => {
+      L.geoJSON(geojson, {
+        style: function(feature) {
+          return {
+            color: "#000000",      // Linha preta
+            weight: 2,             // Espessura da linha
+            opacity: 0.6,          // Opacidade da linha
+            fillColor: "#000000",  // Preenchimento preto
+            fillOpacity: 0.15,     // Opacidade do preenchimento (efeito de hachura/sombra)
+            dashArray: '3'         // Linha levemente tracejada para estilo técnico
+          };
+        },
+        interactive: false         // Não interfere nos cliques das praças
+      }).addTo(map);
+    })
+    .catch(err => console.error('Erro ao carregar bairros.geojson:', err));
+}
+
+function normalizeGeoJSON(features){
+  return features.map(f => {
+    const p = f.properties || {};
+    const c = f.geometry?.coordinates || [];
+    return {
+      bairro: String(p.bairro || '').trim(),
+      local: String(p.local || p.nome || p.name || p.bairro || '').trim(),
+      populacao: parseFloat(p.populacao) || 0,
+      foto: p.foto || '',
+      lat: c.length >= 2 ? c[1] : null,
+      lon: c.length >= 2 ? c[0] : null
+    };
+  });
+}
+
+function onDataLoaded(){
+  populateFilters();
+  initMap();
+  applyFilters();
+}
+
+function populateFilters(){
+  const unique = arr => [...new Set(arr.filter(Boolean))].sort((a,b) => a.localeCompare(b,'pt-BR'));
+
+  const bairroEl = document.getElementById('f-bairro');
+  bairroEl.innerHTML = '<option value="">Todos</option>' +
+    unique(raw.map(d => d.bairro)).map(v => `<option value="${v}">${v}</option>`).join('');
+
+  bairroEl.addEventListener('change', () => {
+    updateLocalOptions(bairroEl.value);
+    applyFilters();
+  });
+
+  updateLocalOptions('');
+}
+
+function updateLocalOptions(selectedBairro){
+  const unique = arr => [...new Set(arr.filter(Boolean))].sort((a,b) => a.localeCompare(b,'pt-BR'));
+  const localEl = document.getElementById('f-local');
+  const currentLocal = localEl.value;
+
+  const source = selectedBairro ? raw.filter(d => d.bairro === selectedBairro) : raw;
+  const locais = unique(source.map(d => d.local));
+
+  localEl.innerHTML = '<option value="">Todos</option>' +
+    locais.map(v => `<option value="${v}">${v}</option>`).join('');
+
+  localEl.value = locais.includes(currentLocal) ? currentLocal : '';
+}
+
+function initMap(){
+  if(map) return;
+  map = L.map('map', { center:[-2.5,-44], zoom:5, preferCanvas:true });
+
+  tileOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' });
+  tileDark = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png');
+  tileSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
+
+  tileOSM.addTo(map);
+  markersLayer = L.layerGroup().addTo(map);
+
+  heatLayer = L.heatLayer([], { radius:20, blur:30, maxZoom:13 });
+
+  legendControl = L.control({position:'bottomright'});
+  legendControl.onAdd = function(){
+    const div = L.DomUtil.create('div','leaflet-control-legend');
+    div.innerHTML = `<div class="legend-title">Praças</div><div class="legend-sample"><div class="legend-circle"></div></div><div class="legend-labels"><span>Visíveis</span><span id="legendCount" style="color:var(--green)">0</span></div>`;
+    return div;
+  };
+  legendControl.addTo(map);
+}
+
+function setBasemap(type){
+  document.querySelectorAll('.bm-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('bm-' + type).classList.add('active');
+
+  [tileOSM, tileDark, tileSat, heatLayer, markersLayer].forEach(l => { if(map.hasLayer(l)) map.removeLayer(l); });
+
+  if(type === 'osm'){ tileOSM.addTo(map); markersLayer.addTo(map); heatActive = false; }
+  else if(type === 'sat'){ tileSat.addTo(map); markersLayer.addTo(map); heatActive = false; }
+  else if(type === 'heat'){ tileDark.addTo(map); heatLayer.addTo(map); heatActive = true; }
+
+  renderMarkersAndFit();
+}
+
+function showPhoto(local, fotoNome){
+  document.querySelectorAll('.tab')[0].click();
+  const img = document.getElementById('main-photo');
+  const cap = document.getElementById('main-caption');
+  const placeholder = document.querySelector('#photo-viewer .placeholder');
+  const btnExpand = document.getElementById('btn-expand-photo');
+
+  if(fotoNome){
+    img.src = fotoNome;
+    img.style.display = 'block';
+    cap.innerText = local;
+    cap.style.display = 'block';
+    placeholder.style.display = 'none';
+    btnExpand.classList.add('visible');
+    document.getElementById('lightbox-img').src = fotoNome;
+    document.getElementById('lightbox-caption').textContent = local;
+  } else {
+    img.style.display = 'none';
+    cap.style.display = 'none';
+    placeholder.style.display = 'block';
+    placeholder.innerText = 'Nenhuma imagem disponível para este local.';
+    btnExpand.classList.remove('visible');
+  }
+}
+
+function openLightbox(){
+  const img = document.getElementById('main-photo');
+  if(!img.src || img.style.display === 'none') return;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+function applyZoom(bairro, local){
+  if(!map) return;
+  let pts = filtered.filter(d => d.lat && d.lon).map(d => [d.lat, d.lon]);
+  if(!pts.length){
+    pts = raw.filter(d => d.lat && d.lon).map(d => [d.lat, d.lon]);
+    if(pts.length) map.fitBounds(L.latLngBounds(pts), { padding:[50,50], maxZoom:16, animate:true });
+    return;
+  }
+  if(local){
+    if(pts.length === 1) map.setView(pts[0], 18, { animate: true });
+    else map.fitBounds(L.latLngBounds(pts), { padding:[50,50], maxZoom:18, animate:true });
+    return;
+  }
+  if(bairro){
+    map.fitBounds(L.latLngBounds(pts), { padding:[50,50], maxZoom:16, animate:true });
+    return;
+  }
+  map.fitBounds(L.latLngBounds(pts), { padding:[50,50], maxZoom:16, animate:true });
+}
+
+function applyFilters(){
+  const valBairro = document.getElementById('f-bairro').value;
+  const valLocal  = document.getElementById('f-local').value;
+
+  filtered = raw.filter(d => {
+    if(valBairro && d.bairro !== valBairro) return false;
+    if(valLocal  && d.local  !== valLocal)  return false;
+    return true;
+  });
+
+  updateKPIs(valBairro);
+  renderMarkersAndFit();
+  applyZoom(valBairro, valLocal);
+  buildRanking();
+}
+
+function updateKPIs(bairroAtivo){
+  const total = filtered.length;
+  const pop = filtered.reduce((s,d) => s + d.populacao, 0);
+  document.getElementById('h-total').textContent = total.toLocaleString('pt-BR');
+  document.getElementById('v-pracas').textContent = total.toLocaleString('pt-BR');
+  const showPop = !!bairroAtivo;
+  document.getElementById('h-days').textContent = showPop ? pop.toLocaleString('pt-BR') : '—';
+  document.getElementById('v-populacao').textContent = showPop ? pop.toLocaleString('pt-BR') : '—';
+  if(document.getElementById('legendCount')) document.getElementById('legendCount').textContent = total;
+}
+
+function renderMarkersAndFit(){
+  markersLayer.clearLayers();
+  const hPts = [];
+
+  filtered.forEach(d => {
+    if(d.lat && d.lon){
+      const m = L.circleMarker([d.lat, d.lon], {
+        radius: 6, weight: 1, color: '#1d4ed8', fillColor: '#3b82f6', fillOpacity: 0.9
+      });
+      m.on('click', () => showPhoto(d.local, d.foto));
+      m.bindPopup(`<strong>${d.local}</strong><br><small>Bairro: ${d.bairro}</small><br><small>População: ${d.populacao.toLocaleString('pt-BR')}</small>`);
+      markersLayer.addLayer(m);
+      hPts.push([d.lat, d.lon, 0.8]);
+    }
+  });
+
+  if(heatLayer.setLatLngs) heatLayer.setLatLngs(hPts);
+  if(!heatActive && !map.hasLayer(markersLayer)) markersLayer.addTo(map);
+}
+
+function buildRanking(){
+  const data = {};
+  filtered.forEach(d => { data[d.bairro] = (data[d.bairro] || 0) + d.populacao; });
+  const sorted = Object.entries(data).map(([k,v]) => ({k,v})).sort((a,b) => b.v - a.v).slice(0, 20);
+  doChart('ch-rank', 'bar', sorted.map(x=>x.k), [{ label:'População', data:sorted.map(x=>x.v), backgroundColor:'#3b82f6' }], { indexAxis:'y', plugins:{legend:{display:false}} });
+}
+
+function doChart(id, type, labels, datasets, opts={}){
+  if(charts[id]) charts[id].destroy();
+  charts[id] = new Chart(document.getElementById(id), {
+    type, data: { labels, datasets },
+    options: Object.assign({ responsive:true, maintainAspectRatio:false }, opts)
+  });
+}
+
+function adjustTabFonts(){
+  const tabs = document.querySelectorAll('.tab');
+  if(!tabs.length) return;
+  const size = Math.max(9, Math.min(13, (document.getElementById('tabs').clientWidth / tabs.length) / 10));
+  tabs.forEach(t => t.style.fontSize = size + 'px');
+}
+
+initUI();
+tryAutoFetch();
+</script>
+</body>
+</html>
