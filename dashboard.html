@@ -107,6 +107,7 @@
     }
     #lightbox-caption{
       margin-top:14px;font-size:14px;color:var(--green);font-weight:600;
+      text-align:center;padding:0 16px;
     }
     #lightbox-close{
       position:absolute;top:18px;right:22px;
@@ -130,7 +131,7 @@
       box-shadow:0 10px 30px rgba(0,0,0,0.6),0 1px 0 rgba(45,211,138,0.06) inset;
       width:auto;max-width:calc(100% - 60px);
     }
-    .filters-group{display:flex;gap:10px;align-items:center}
+    .filters-group{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .flt-item{display:flex;flex-direction:column;gap:6px;flex:0 0 auto}
     .flt-item label{font-size:12px;color:var(--green);font-weight:700;letter-spacing:0.4px}
     .flt-select{background:transparent;border:1px solid rgba(45,211,138,0.18);color:var(--txt);padding:8px 12px;border-radius:10px;min-width:130px;max-width:220px;box-shadow:0 2px 0 rgba(0,0,0,0.3)}
@@ -151,7 +152,7 @@
     .legend-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:8px}
 
     #basemap-toggle{
-      position:absolute;top:10px;left:990px;z-index:1000;display:column;align-items:center;
+      position:absolute;top:10px;left:990px;z-index:1000;display:flex;align-items:center;
       background:linear-gradient(180deg,#0c1a14,#06210a);border-radius:14px;padding:6px;
       box-shadow:0 8px 18px rgba(0,0,0,0.45);border:1px solid rgba(0,0,0,0.25);
     }
@@ -165,9 +166,64 @@
     .bm-icon{font-size:16px}
     .bm-sep{width:1px;height:24px;background:rgba(255,255,255,0.1)}
 
+    /* ========== RESPONSIVE ========== */
+    @media(max-width:1100px){
+      #basemap-toggle{left:auto;right:12px}
+    }
+
     @media(max-width:900px){
-      #basemap-toggle{left:auto;right:10px}
-      #filterBar{left:8px;transform:none;width:calc(100% - 16px);max-width:none;flex-wrap:wrap}
+      body{height:auto;overflow:auto}
+      #hdr{height:auto;padding:10px 14px;gap:10px}
+      #hdr h1{font-size:15px}
+      .kpi-val{font-size:16px}
+      #main{flex-direction:column;overflow:visible;height:auto}
+      #map{height:55vh;width:100%;flex:none}
+      #panel{width:100%;height:auto;border-left:none;border-top:1px solid rgba(0,0,0,0.25);overflow:visible}
+      #filterBar{
+        position:relative;top:auto;left:auto;transform:none;width:100%;max-width:none;
+        border-radius:0;border-left:none;border-right:none;border-top:none;
+        padding:10px 14px;gap:8px;justify-content:space-between;
+      }
+      .filters-group{gap:8px;flex:1}
+      .flt-item{flex:1 1 auto}
+      .flt-select{width:100%;min-width:0}
+      #basemap-toggle{
+        top:auto;bottom:12px;left:auto;right:12px;
+        padding:4px;border-radius:10px;
+      }
+      .bm-btn{min-width:0;padding:7px 10px;font-size:11px}
+      .bm-icon{font-size:14px}
+      .bm-sep{height:20px}
+      .cwrap{height:260px}
+    }
+
+    @media(max-width:640px){
+      #hdr{flex-direction:column;align-items:flex-start}
+      #hdr .kpis{width:100%;justify-content:space-between;gap:10px}
+      .kpi-small{text-align:center;flex:1}
+      #map{height:50vh}
+      #filterBar{flex-wrap:wrap;gap:8px}
+      .filters-group{width:100%}
+      .flt-item{min-width:120px}
+      .kbox .val{font-size:18px}
+      .kbox{padding:10px 6px}
+      #photo-viewer{min-height:200px}
+      .tab{min-width:0;flex:1;font-size:11px;padding:6px 4px}
+      #lightbox img{max-width:95vw;max-height:78vh}
+      #lightbox-close{top:10px;right:10px;padding:6px 10px;font-size:18px}
+    }
+
+    @media(max-width:480px){
+      #hdr h1{font-size:14px}
+      .small{font-size:11px}
+      .kpi-val{font-size:15px}
+      .kpi-label{font-size:10px}
+      #map{height:45vh}
+      .flt-item label{font-size:11px}
+      .flt-select{padding:7px 8px;font-size:13px}
+      .bm-btn{padding:6px 8px;font-size:10px;gap:4px}
+      .bm-icon{font-size:13px}
+      .cwrap{height:220px}
     }
   </style>
 </head>
@@ -290,7 +346,6 @@ function tryAutoFetch(){
     .then(geojson => {
       raw = normalizeGeoJSON(geojson.features);
       onDataLoaded();
-      // Plotar bairros após carregar o mapa
       plotBairrosPolygons();
     })
     .catch(err => console.error('Erro:', err));
@@ -303,15 +358,15 @@ function plotBairrosPolygons() {
       L.geoJSON(geojson, {
         style: function(feature) {
           return {
-            color: "#000000",      // Linha preta
-            weight: 2,             // Espessura da linha
-            opacity: 0.6,          // Opacidade da linha
-            fillColor: "#000000",  // Preenchimento preto
-            fillOpacity: 0.15,     // Opacidade do preenchimento (efeito de hachura/sombra)
-            dashArray: '3'         // Linha levemente tracejada para estilo técnico
+            color: "#000000",
+            weight: 2,
+            opacity: 0.6,
+            fillColor: "#000000",
+            fillOpacity: 0.15,
+            dashArray: '3'
           };
         },
-        interactive: false         // Não interfere nos cliques das praças
+        interactive: false
       }).addTo(map);
     })
     .catch(err => console.error('Erro ao carregar bairros.geojson:', err));
