@@ -47,7 +47,6 @@
       text-overflow:ellipsis;border-radius:8px;background:transparent;
     }
     .tab.active{color:var(--green);border-bottom:2px solid var(--green);background:rgba(45,211,138,0.02)}
-    @media(max-width:600px){.tab{min-width:64px;padding:5px 6px;font-size:11px}}
 
     .tc{display:none;padding:14px;gap:12px;flex-direction:column}
     .tc.active{display:flex}
@@ -57,173 +56,68 @@
     .kbox{background:var(--bg);padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.2);text-align:center}
     .kbox .val{font-family:monospace;font-weight:700;color:var(--green);font-size:20px}
 
-    /* Visualizar Imagem */
-    .photo-card-header{
-      display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;
-    }
-    .photo-card-header h4{font-size:13px;color:var(--muted);margin:0}
+    .photo-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
     #btn-expand-photo{
-      display:none;
-      background:transparent;border:1px solid rgba(45,211,138,0.25);
-      color:var(--green);border-radius:7px;padding:4px 10px;
-      font-size:11px;font-weight:700;cursor:pointer;gap:5px;align-items:center;
-      transition:background 0.15s;
+      display:none;background:transparent;border:1px solid rgba(45,211,138,0.25);
+      color:var(--green);border-radius:7px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;
+      gap:5px;align-items:center;transition:background 0.15s;
     }
-    #btn-expand-photo:hover{background:rgba(45,211,138,0.08)}
     #btn-expand-photo.visible{display:flex}
 
     #photo-viewer{
-      margin-top:0;
-      min-height:260px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      background:#020604;
-      border:1px dashed var(--border);
-      border-radius:10px;
-      overflow:hidden;
+      margin-top:0;min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:#020604;border:1px dashed var(--border);border-radius:10px;overflow:hidden;
     }
     #photo-viewer img{ width:100%; height:auto; display:none; cursor:zoom-in; }
     #photo-viewer .placeholder{ color:var(--border2); text-align:center; padding:20px; font-size:13px; }
-    .photo-caption{
-      padding:8px; font-size:12px; background:rgba(0,0,0,0.5); width:100%; text-align:center; color:var(--green); display:none;
-    }
+    .photo-caption{padding:8px; font-size:12px; background:rgba(0,0,0,0.5); width:100%; text-align:center; color:var(--green); display:none;}
 
-    /* Lightbox */
     #lightbox{
-      display:none;position:fixed;inset:0;z-index:3000;
-      background:rgba(0,0,0,0.92);
-      align-items:center;justify-content:center;flex-direction:column;
-      animation:lbFadeIn 0.2s ease;
+      display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.92);
+      align-items:center;justify-content:center;flex-direction:column;animation:lbFadeIn 0.2s ease;
     }
     #lightbox.open{display:flex}
-    @keyframes lbFadeIn{from{opacity:0}to{opacity:1}}
-    #lightbox img{
-      max-width:92vw;max-height:85vh;
-      border-radius:10px;
-      box-shadow:0 8px 40px rgba(0,0,0,0.8);
-      object-fit:contain;
-    }
-    #lightbox-caption{
-      margin-top:14px;font-size:14px;color:var(--green);font-weight:600;
-      text-align:center;padding:0 16px;
-    }
+    #lightbox img{max-width:92vw;max-height:85vh;border-radius:10px;object-fit:contain;}
+    #lightbox-caption{margin-top:14px;font-size:14px;color:var(--green);font-weight:600;text-align:center;padding:0 16px;}
     #lightbox-close{
-      position:absolute;top:18px;right:22px;
-      background:transparent;border:1px solid rgba(255,255,255,0.15);
-      color:#fff;font-size:22px;line-height:1;
-      border-radius:8px;padding:4px 12px;cursor:pointer;
-      transition:background 0.15s;
+      position:absolute;top:18px;right:22px;background:transparent;border:1px solid rgba(255,255,255,0.15);
+      color:#fff;font-size:22px;border-radius:8px;padding:4px 12px;cursor:pointer;
     }
-    #lightbox-close:hover{background:rgba(255,255,255,0.08)}
-
-    .cwrap{height:220px;position:relative}
-    #loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:2000;background:linear-gradient(rgba(5,13,8,0.5),rgba(5,13,8,0.5));backdrop-filter:blur(1px)}
-    .spinner{width:40px;height:40px;border:3px solid rgba(0,0,0,0.2);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .small{font-size:12px;color:var(--muted)}
 
     #filterBar{
       position:absolute;top:12px;left:37%;transform:translateX(-50%);z-index:900;
       display:flex;gap:10px;align-items:center;padding:12px;border-radius:14px;
       background:var(--filter-bg);border:1px solid var(--filter-border);
-      box-shadow:0 10px 30px rgba(0,0,0,0.6),0 1px 0 rgba(45,211,138,0.06) inset;
-      width:auto;max-width:calc(100% - 60px);
+      box-shadow:0 10px 30px rgba(0,0,0,0.6);
     }
-    .filters-group{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .flt-item{display:flex;flex-direction:column;gap:6px;flex:0 0 auto}
-    .flt-item label{font-size:12px;color:var(--green);font-weight:700;letter-spacing:0.4px}
-    .flt-select{background:transparent;border:1px solid rgba(45,211,138,0.18);color:var(--txt);padding:8px 12px;border-radius:10px;min-width:130px;max-width:220px;box-shadow:0 2px 0 rgba(0,0,0,0.3)}
+    .flt-item{display:flex;flex-direction:column;gap:4px;}
+    .flt-item label{font-size:11px;color:var(--green);font-weight:700;}
+    .flt-select{background:transparent;border:1px solid rgba(45,211,138,0.18);color:var(--txt);padding:6px 10px;border-radius:8px;min-width:130px;}
     .flt-select option{background:#07120c;color:var(--txt)}
-    .flt-clear{padding:8px 14px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);cursor:pointer}
+    .flt-clear{padding:8px 14px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--muted);cursor:pointer}
+
+    #basemap-toggle{
+      position:absolute;top:12px;right:440px;z-index:1000;display:flex;
+      background:var(--filter-bg);border-radius:12px;padding:4px;border:1px solid var(--filter-border);
+    }
+    .bm-btn{
+      padding:8px 12px;border-radius:8px;color:var(--muted);cursor:pointer;font-weight:700;font-size:11px;
+      background:transparent;border:none;transition:all 0.2s;
+    }
+    .bm-btn.active{background:rgba(45,211,138,0.15);color:var(--green);}
 
     .leaflet-control-legend{
       background:var(--filter-bg);border:1px solid var(--filter-border);color:var(--muted);
-      padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.6);width:180px;font-size:12px;
-    }
-    .legend-title{color:var(--green);font-weight:700;margin-bottom:8px;font-size:12px}
-    .legend-sample{display:flex;align-items:center;gap:8px}
-    .legend-circle{
-      width:14px;height:14px;border-radius:50%;
-      background:#3b82f6;box-shadow:0 0 6px rgba(59,130,246,0.45);
-      border:1px solid rgba(0,0,0,0.3)
-    }
-    .legend-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:8px}
-
-    #basemap-toggle{
-      position:absolute;top:10px;left:990px;z-index:1000;display:flex;align-items:center;
-      background:linear-gradient(180deg,#0c1a14,#06210a);border-radius:14px;padding:6px;
-      box-shadow:0 8px 18px rgba(0,0,0,0.45);border:1px solid rgba(0,0,0,0.25);
-    }
-    .bm-btn{
-      display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:10px;min-width:92px;
-      color:var(--muted);cursor:pointer;font-weight:700;font-size:12px;background:transparent;
-      border:none;transition:all 0.2s ease;
-    }
-    .bm-btn:hover{background:rgba(45,211,138,0.03)}
-    .bm-btn.active{background:linear-gradient(180deg,rgba(45,211,138,0.06),rgba(45,211,138,0.02));color:var(--green);box-shadow:inset 0 -2px 0 rgba(45,211,138,0.06)}
-    .bm-icon{font-size:16px}
-    .bm-sep{width:1px;height:24px;background:rgba(255,255,255,0.1)}
-
-    /* ========== RESPONSIVE ========== */
-    @media(max-width:1100px){
-      #basemap-toggle{left:auto;right:12px}
+      padding:10px;border-radius:10px;font-size:11px;
     }
 
     @media(max-width:900px){
       body{height:auto;overflow:auto}
-      #hdr{height:auto;padding:10px 14px;gap:10px}
-      #hdr h1{font-size:15px}
-      .kpi-val{font-size:16px}
-      #main{flex-direction:column;overflow:visible;height:auto}
-      #map{height:55vh;width:100%;flex:none}
-      #panel{width:100%;height:auto;border-left:none;border-top:1px solid rgba(0,0,0,0.25);overflow:visible}
-      #filterBar{
-        position:relative;top:auto;left:auto;transform:none;width:100%;max-width:none;
-        border-radius:0;border-left:none;border-right:none;border-top:none;
-        padding:10px 14px;gap:8px;justify-content:space-between;
-      }
-      .filters-group{gap:8px;flex:1}
-      .flt-item{flex:1 1 auto}
-      .flt-select{width:100%;min-width:0}
-      #basemap-toggle{
-        top:auto;bottom:12px;left:auto;right:12px;
-        padding:4px;border-radius:10px;
-      }
-      .bm-btn{min-width:0;padding:7px 10px;font-size:11px}
-      .bm-icon{font-size:14px}
-      .bm-sep{height:20px}
-      .cwrap{height:260px}
-    }
-
-    @media(max-width:640px){
-      #hdr{flex-direction:column;align-items:flex-start}
-      #hdr .kpis{width:100%;justify-content:space-between;gap:10px}
-      .kpi-small{text-align:center;flex:1}
-      #map{height:50vh}
-      #filterBar{flex-wrap:wrap;gap:8px}
-      .filters-group{width:100%}
-      .flt-item{min-width:120px}
-      .kbox .val{font-size:18px}
-      .kbox{padding:10px 6px}
-      #photo-viewer{min-height:200px}
-      .tab{min-width:0;flex:1;font-size:11px;padding:6px 4px}
-      #lightbox img{max-width:95vw;max-height:78vh}
-      #lightbox-close{top:10px;right:10px;padding:6px 10px;font-size:18px}
-    }
-
-    @media(max-width:480px){
-      #hdr h1{font-size:14px}
-      .small{font-size:11px}
-      .kpi-val{font-size:15px}
-      .kpi-label{font-size:10px}
-      #map{height:45vh}
-      .flt-item label{font-size:11px}
-      .flt-select{padding:7px 8px;font-size:13px}
-      .bm-btn{padding:6px 8px;font-size:10px;gap:4px}
-      .bm-icon{font-size:13px}
-      .cwrap{height:220px}
+      #main{flex-direction:column;height:auto}
+      #map{height:50vh;width:100%}
+      #panel{width:100%}
+      #filterBar{position:relative;top:0;left:0;transform:none;width:100%;border-radius:0;}
+      #basemap-toggle{position:relative;top:0;right:0;width:100%;justify-content:center;border-radius:0;}
     }
   </style>
 </head>
@@ -232,11 +126,11 @@
 <div id="hdr">
   <div>
     <h1>Acompanhamento de Implementação e Reformas de Praças</h1>
-    <div class="small">Praças na área urbana de Mãe do Rio</div>
+    <div class="small" style="font-size:11px; color:var(--muted)">Mãe do Rio/PA</div>
   </div>
   <div class="kpis">
     <div class="kpi-small"><div class="kpi-val" id="h-total">—</div><div class="kpi-label">Número de Praças</div></div>
-    <div class="kpi-small"><div class="kpi-val" id="h-days">—</div><div class="kpi-label">População Imediatamente Assistida</div></div>
+    <div class="kpi-small"><div class="kpi-val" id="h-days">—</div><div class="kpi-label">População Assistida</div></div>
   </div>
 </div>
 
@@ -244,19 +138,15 @@
   <div id="map"></div>
 
   <div id="filterBar">
-    <div class="filters-group">
-      <div class="flt-item"><label for="f-bairro">Bairro</label><select id="f-bairro" class="flt-select"></select></div>
-      <div class="flt-item"><label for="f-local">Local</label><select id="f-local" class="flt-select"></select></div>
-    </div>
-    <button id="btn-clear" class="flt-clear" title="Limpar filtros">Limpar</button>
+    <div class="flt-item"><label>Bairro</label><select id="f-bairro" class="flt-select"></select></div>
+    <div class="flt-item"><label>Local</label><select id="f-local" class="flt-select"></select></div>
+    <button id="btn-clear" class="flt-clear">Limpar</button>
   </div>
 
   <div id="basemap-toggle">
-    <button class="bm-btn active" id="bm-osm" onclick="setBasemap('osm')"><span class="bm-icon">🗺️</span>Mapa</button>
-    <div class="bm-sep"></div>
-    <button class="bm-btn" id="bm-sat" onclick="setBasemap('sat')"><span class="bm-icon">🛰️</span>Satélite</button>
-    <div class="bm-sep"></div>
-    <button class="bm-btn" id="bm-heat" onclick="setBasemap('heat')"><span class="bm-icon">🔥</span>Calor</button>
+    <button class="bm-btn active" id="bm-osm" onclick="setBasemap('osm')">🗺️ Mapa</button>
+    <button class="bm-btn" id="bm-sat" onclick="setBasemap('sat')">🛰️ Satélite</button>
+    <button class="bm-btn" id="bm-heat" onclick="setBasemap('heat')">🔥 Calor</button>
   </div>
 
   <div id="panel">
@@ -264,39 +154,24 @@
       <div class="tab active" data-tab="analise">Visão Geral</div>
       <div class="tab" data-tab="ranking">Ranking</div>
     </div>
-
     <div id="tc-analise" class="tc active">
       <div class="kgrid">
-        <div class="kbox"><div class="val" id="v-pracas">—</div><div class="small">Praças Atendidas</div></div>
-        <div class="kbox"><div class="val" id="v-populacao">—</div><div class="small">População Imediatamente Assistida</div></div>
+        <div class="kbox"><div class="val" id="v-pracas">—</div><div class="small" style="font-size:11px">Praças</div></div>
+        <div class="kbox"><div class="val" id="v-populacao">—</div><div class="small" style="font-size:11px">População</div></div>
       </div>
-
       <div class="card">
-        <div class="photo-card-header">
-          <h4>Visualizar Imagem</h4>
-          <button id="btn-expand-photo" title="Ver em tela cheia" onclick="openLightbox()">
-            <span>⛶</span> Expandir
-          </button>
-        </div>
+        <div class="photo-card-header"><h4>Visualizar Imagem</h4><button id="btn-expand-photo" onclick="openLightbox()">⛶ Expandir</button></div>
         <div id="photo-viewer">
           <div class="placeholder">Clique em uma praça no mapa para ver a foto</div>
-          <img id="main-photo" src="" alt="Foto da Praça" onclick="openLightbox()">
+          <img id="main-photo" src="" alt="" onclick="openLightbox()">
           <div id="main-caption" class="photo-caption"></div>
         </div>
       </div>
     </div>
-
-    <div id="tc-ranking" class="tc">
-      <div class="card"><h4>População por Bairro</h4><div class="cwrap" style="height:420px"><canvas id="ch-rank"></canvas></div></div>
-    </div>
+    <div id="tc-ranking" class="tc"><div class="card"><canvas id="ch-rank" style="height:350px"></canvas></div></div>
   </div>
 </div>
 
-<div id="loading" style="display:none">
-  <div class="spinner"></div>
-</div>
-
-<!-- Lightbox -->
 <div id="lightbox">
   <button id="lightbox-close" onclick="closeLightbox()">✕</button>
   <img id="lightbox-img" src="" alt="">
@@ -307,10 +182,8 @@
 const GEOJSON_URL = 'locais_pracas_mdr.geojson';
 const BAIRROS_URL = 'bairros.geojson';
 
-let raw = [], filtered = [], map, markersLayer, charts = {}, legendControl;
-let tileDark, tileOSM, tileSat, heatLayer;
-let currentBase = 'osm';
-let heatActive = false;
+let raw = [], filtered = [], map, markersLayer, charts = {}, heatLayer;
+let tileDark, tileOSM, tileSat, heatActive = false;
 
 function initUI(){
   document.querySelectorAll('.tab').forEach(t => {
@@ -328,16 +201,7 @@ function initUI(){
     document.getElementById('f-local').value = '';
     applyFilters();
   });
-
   document.getElementById('f-local').addEventListener('change', applyFilters);
-
-  document.getElementById('lightbox').addEventListener('click', function(e){
-    if(e.target === this) closeLightbox();
-  });
-  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox(); });
-
-  adjustTabFonts();
-  window.addEventListener('resize', adjustTabFonts);
 }
 
 function tryAutoFetch(){
@@ -345,103 +209,36 @@ function tryAutoFetch(){
     .then(r => r.json())
     .then(geojson => {
       raw = normalizeGeoJSON(geojson.features);
-      onDataLoaded();
+      initMap();
+      populateFilters();
+      applyFilters();
       plotBairrosPolygons();
-    })
-    .catch(err => console.error('Erro:', err));
-}
-
-function plotBairrosPolygons() {
-  fetch(BAIRROS_URL)
-    .then(r => r.json())
-    .then(geojson => {
-      L.geoJSON(geojson, {
-        style: function(feature) {
-          return {
-            color: "#000000",
-            weight: 2,
-            opacity: 0.6,
-            fillColor: "#000000",
-            fillOpacity: 0.15,
-            dashArray: '3'
-          };
-        },
-        interactive: false
-      }).addTo(map);
-    })
-    .catch(err => console.error('Erro ao carregar bairros.geojson:', err));
+    }).catch(e => console.error(e));
 }
 
 function normalizeGeoJSON(features){
-  return features.map(f => {
-    const p = f.properties || {};
-    const c = f.geometry?.coordinates || [];
-    return {
-      bairro: String(p.bairro || '').trim(),
-      local: String(p.local || p.nome || p.name || p.bairro || '').trim(),
-      populacao: parseFloat(p.populacao) || 0,
-      foto: p.foto || '',
-      lat: c.length >= 2 ? c[1] : null,
-      lon: c.length >= 2 ? c[0] : null
-    };
-  });
-}
-
-function onDataLoaded(){
-  populateFilters();
-  initMap();
-  applyFilters();
-}
-
-function populateFilters(){
-  const unique = arr => [...new Set(arr.filter(Boolean))].sort((a,b) => a.localeCompare(b,'pt-BR'));
-
-  const bairroEl = document.getElementById('f-bairro');
-  bairroEl.innerHTML = '<option value="">Todos</option>' +
-    unique(raw.map(d => d.bairro)).map(v => `<option value="${v}">${v}</option>`).join('');
-
-  bairroEl.addEventListener('change', () => {
-    updateLocalOptions(bairroEl.value);
-    applyFilters();
-  });
-
-  updateLocalOptions('');
-}
-
-function updateLocalOptions(selectedBairro){
-  const unique = arr => [...new Set(arr.filter(Boolean))].sort((a,b) => a.localeCompare(b,'pt-BR'));
-  const localEl = document.getElementById('f-local');
-  const currentLocal = localEl.value;
-
-  const source = selectedBairro ? raw.filter(d => d.bairro === selectedBairro) : raw;
-  const locais = unique(source.map(d => d.local));
-
-  localEl.innerHTML = '<option value="">Todos</option>' +
-    locais.map(v => `<option value="${v}">${v}</option>`).join('');
-
-  localEl.value = locais.includes(currentLocal) ? currentLocal : '';
+  return features.map(f => ({
+    bairro: String(f.properties?.bairro || '').trim(),
+    local: String(f.properties?.local || f.properties?.nome || 'Local sem nome').trim(),
+    populacao: parseFloat(f.properties?.populacao) || 0,
+    foto: f.properties?.foto || '',
+    lat: f.geometry?.coordinates[1],
+    lon: f.geometry?.coordinates[0]
+  }));
 }
 
 function initMap(){
-  if(map) return;
-  map = L.map('map', { center:[-2.5,-44], zoom:5, preferCanvas:true });
+  // Coordenadas aproximadas de Mãe do Rio - PA
+  map = L.map('map', { center:[-2.05, -47.55], zoom:14 });
 
-  tileOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' });
-  tileDark = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png');
+  tileOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+  // Usando CartoDB Dark Matter em vez de Stadia Maps para evitar erro 401
+  tileDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png');
   tileSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
 
   tileOSM.addTo(map);
   markersLayer = L.layerGroup().addTo(map);
-
-  heatLayer = L.heatLayer([], { radius:20, blur:30, maxZoom:13 });
-
-  legendControl = L.control({position:'bottomright'});
-  legendControl.onAdd = function(){
-    const div = L.DomUtil.create('div','leaflet-control-legend');
-    div.innerHTML = `<div class="legend-title">Praças</div><div class="legend-sample"><div class="legend-circle"></div></div><div class="legend-labels"><span>Visíveis</span><span id="legendCount" style="color:var(--green)">0</span></div>`;
-    return div;
-  };
-  legendControl.addTo(map);
+  heatLayer = L.heatLayer([], { radius:25, blur:15, max: 1.0 });
 }
 
 function setBasemap(type){
@@ -453,133 +250,104 @@ function setBasemap(type){
   if(type === 'osm'){ tileOSM.addTo(map); markersLayer.addTo(map); heatActive = false; }
   else if(type === 'sat'){ tileSat.addTo(map); markersLayer.addTo(map); heatActive = false; }
   else if(type === 'heat'){ tileDark.addTo(map); heatLayer.addTo(map); heatActive = true; }
-
+  
   renderMarkersAndFit();
-}
-
-function showPhoto(local, fotoNome){
-  document.querySelectorAll('.tab')[0].click();
-  const img = document.getElementById('main-photo');
-  const cap = document.getElementById('main-caption');
-  const placeholder = document.querySelector('#photo-viewer .placeholder');
-  const btnExpand = document.getElementById('btn-expand-photo');
-
-  if(fotoNome){
-    img.src = fotoNome;
-    img.style.display = 'block';
-    cap.innerText = local;
-    cap.style.display = 'block';
-    placeholder.style.display = 'none';
-    btnExpand.classList.add('visible');
-    document.getElementById('lightbox-img').src = fotoNome;
-    document.getElementById('lightbox-caption').textContent = local;
-  } else {
-    img.style.display = 'none';
-    cap.style.display = 'none';
-    placeholder.style.display = 'block';
-    placeholder.innerText = 'Nenhuma imagem disponível para este local.';
-    btnExpand.classList.remove('visible');
-  }
-}
-
-function openLightbox(){
-  const img = document.getElementById('main-photo');
-  if(!img.src || img.style.display === 'none') return;
-  document.getElementById('lightbox').classList.add('open');
-}
-
-function closeLightbox(){
-  document.getElementById('lightbox').classList.remove('open');
-}
-
-function applyZoom(bairro, local){
-  if(!map) return;
-  let pts = filtered.filter(d => d.lat && d.lon).map(d => [d.lat, d.lon]);
-  if(!pts.length){
-    pts = raw.filter(d => d.lat && d.lon).map(d => [d.lat, d.lon]);
-    if(pts.length) map.fitBounds(L.latLngBounds(pts), { padding:[50,50], maxZoom:16, animate:true });
-    return;
-  }
-  if(local){
-    if(pts.length === 1) map.setView(pts[0], 18, { animate: true });
-    else map.fitBounds(L.latLngBounds(pts), { padding:[50,50], maxZoom:18, animate:true });
-    return;
-  }
-  if(bairro){
-    map.fitBounds(L.latLngBounds(pts), { padding:[50,50], maxZoom:16, animate:true });
-    return;
-  }
-  map.fitBounds(L.latLngBounds(pts), { padding:[50,50], maxZoom:16, animate:true });
 }
 
 function applyFilters(){
-  const valBairro = document.getElementById('f-bairro').value;
-  const valLocal  = document.getElementById('f-local').value;
-
-  filtered = raw.filter(d => {
-    if(valBairro && d.bairro !== valBairro) return false;
-    if(valLocal  && d.local  !== valLocal)  return false;
-    return true;
-  });
-
-  updateKPIs(valBairro);
+  const b = document.getElementById('f-bairro').value;
+  const l = document.getElementById('f-local').value;
+  
+  filtered = raw.filter(d => (!b || d.bairro === b) && (!l || d.local === l));
+  
+  updateKPIs(b);
   renderMarkersAndFit();
-  applyZoom(valBairro, valLocal);
   buildRanking();
-}
-
-function updateKPIs(bairroAtivo){
-  const total = filtered.length;
-  const pop = filtered.reduce((s,d) => s + d.populacao, 0);
-  document.getElementById('h-total').textContent = total.toLocaleString('pt-BR');
-  document.getElementById('v-pracas').textContent = total.toLocaleString('pt-BR');
-  const showPop = !!bairroAtivo;
-  document.getElementById('h-days').textContent = showPop ? pop.toLocaleString('pt-BR') : '—';
-  document.getElementById('v-populacao').textContent = showPop ? pop.toLocaleString('pt-BR') : '—';
-  if(document.getElementById('legendCount')) document.getElementById('legendCount').textContent = total;
 }
 
 function renderMarkersAndFit(){
   markersLayer.clearLayers();
-  const hPts = [];
-
+  const hp = [];
   filtered.forEach(d => {
     if(d.lat && d.lon){
-      const m = L.circleMarker([d.lat, d.lon], {
-        radius: 6, weight: 1, color: '#1d4ed8', fillColor: '#3b82f6', fillOpacity: 0.9
-      });
+      const m = L.circleMarker([d.lat, d.lon], {radius:7, color:'#1d4ed8', fillColor:'#3b82f6', fillOpacity:0.8});
+      m.bindPopup(`<strong>${d.local}</strong><br>Pop: ${d.populacao}`);
       m.on('click', () => showPhoto(d.local, d.foto));
-      m.bindPopup(`<strong>${d.local}</strong><br><small>Bairro: ${d.bairro}</small><br><small>População: ${d.populacao.toLocaleString('pt-BR')}</small>`);
       markersLayer.addLayer(m);
-      hPts.push([d.lat, d.lon, 0.8]);
+      hp.push([d.lat, d.lon, 0.7]);
     }
   });
+  heatLayer.setLatLngs(hp);
+  if(filtered.length > 0) {
+    const bounds = L.latLngBounds(filtered.map(d => [d.lat, d.lon]));
+    map.fitBounds(bounds, {padding:[50,50], maxZoom:16});
+  }
+}
 
-  if(heatLayer.setLatLngs) heatLayer.setLatLngs(hPts);
-  if(!heatActive && !map.hasLayer(markersLayer)) markersLayer.addTo(map);
+function populateFilters(){
+  const unique = (arr) => [...new Set(arr)].sort();
+  const bEl = document.getElementById('f-bairro');
+  bEl.innerHTML = '<option value="">Todos</option>' + unique(raw.map(d => d.bairro)).map(v => `<option value="${v}">${v}</option>`).join('');
+  bEl.addEventListener('change', () => { updateLocalOptions(bEl.value); applyFilters(); });
+  updateLocalOptions('');
+}
+
+function updateLocalOptions(selB){
+  const lEl = document.getElementById('f-local');
+  const filteredLocais = selB ? raw.filter(d => d.bairro === selB) : raw;
+  const locais = [...new Set(filteredLocais.map(d => d.local))].sort();
+  lEl.innerHTML = '<option value="">Todos</option>' + locais.map(v => `<option value="${v}">${v}</option>`).join('');
+}
+
+function updateKPIs(bAtivo){
+  const total = filtered.length;
+  const pop = filtered.reduce((s,d) => s + d.populacao, 0);
+  document.getElementById('h-total').textContent = total;
+  document.getElementById('v-pracas').textContent = total;
+  document.getElementById('h-days').textContent = bAtivo ? pop.toLocaleString() : '—';
+  document.getElementById('v-populacao').textContent = bAtivo ? pop.toLocaleString() : '—';
+}
+
+function showPhoto(local, foto){
+  const img = document.getElementById('main-photo');
+  const cap = document.getElementById('main-caption');
+  const btn = document.getElementById('btn-expand-photo');
+  if(foto){
+    img.src = foto; img.style.display='block';
+    cap.innerText = local; cap.style.display='block';
+    btn.classList.add('visible');
+    document.querySelector('.placeholder').style.display='none';
+  }
 }
 
 function buildRanking(){
   const data = {};
   filtered.forEach(d => { data[d.bairro] = (data[d.bairro] || 0) + d.populacao; });
-  const sorted = Object.entries(data).map(([k,v]) => ({k,v})).sort((a,b) => b.v - a.v).slice(0, 20);
-  doChart('ch-rank', 'bar', sorted.map(x=>x.k), [{ label:'População', data:sorted.map(x=>x.v), backgroundColor:'#3b82f6' }], { indexAxis:'y', plugins:{legend:{display:false}} });
-}
-
-function doChart(id, type, labels, datasets, opts={}){
-  if(charts[id]) charts[id].destroy();
-  charts[id] = new Chart(document.getElementById(id), {
-    type, data: { labels, datasets },
-    options: Object.assign({ responsive:true, maintainAspectRatio:false }, opts)
+  const sorted = Object.entries(data).sort((a,b) => b[1]-a[1]).slice(0,10);
+  
+  if(charts['ch-rank']) charts['ch-rank'].destroy();
+  charts['ch-rank'] = new Chart(document.getElementById('ch-rank'), {
+    type:'bar',
+    data: { labels: sorted.map(x=>x[0]), datasets: [{label:'População', data:sorted.map(x=>x[1]), backgroundColor:'#2dd38a'}]},
+    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false }
   });
 }
 
-function adjustTabFonts(){
-  const tabs = document.querySelectorAll('.tab');
-  if(!tabs.length) return;
-  const size = Math.max(9, Math.min(13, (document.getElementById('tabs').clientWidth / tabs.length) / 10));
-  tabs.forEach(t => t.style.fontSize = size + 'px');
+function plotBairrosPolygons() {
+  fetch(BAIRROS_URL).then(r => r.json()).then(g => {
+    L.geoJSON(g, {style: {color: "#2dd38a", weight: 1, fillOpacity: 0.05}}).addTo(map);
+  }).catch(e => console.log("Bairros GeoJSON não encontrado"));
 }
+
+function openLightbox(){ 
+  const src = document.getElementById('main-photo').src;
+  if(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox-caption').innerText = document.getElementById('main-caption').innerText;
+    document.getElementById('lightbox').classList.add('open');
+  }
+}
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
 
 initUI();
 tryAutoFetch();
